@@ -1,0 +1,91 @@
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_DB: enforcement
+      POSTGRES_USER: enforcement
+      POSTGRES_PASSWORD: enforcement
+    ports: ["5433:5432"]
+    volumes: [postgres_data:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U enforcement -d enforcement"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  redis:
+    image: redis:7-alpine
+    ports: ["6380:6380"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  backend:
+    build: ./backend
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql+asyncpg://enforcement:enforcement@postgres:5432/enforcement}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6380/0}
+      SMTP_HOST: ${SMTP_HOST:-mailpit}
+    command: sh -c "alembic upgrade head && python -m app.infrastructure.database.seed && uvicorn app.main:app --host 0.0.0.0 --port 8001"
+    volumes: [./backend:/app]
+    ports: ["8001:8001"]
+    depends_on:
+      postgres: {condition: service_healthy}
+      redis: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+  worker:
+    build: ./backend
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql+asyncpg://enforcement:enforcement@postgres:5432/enforcement}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6380/0}
+      SMTP_HOST: ${SMTP_HOST:-mailpit}
+    command: celery -A app.infrastructure.celery.celery_app:celery_app worker -l INFO
+    volumes: [./backend:/app]
+    depends_on:
+      backend: {condition: service_healthy}
+  beat:
+    build: ./backend
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql+asyncpg://enforcement:enforcement@postgres:5432/enforcement}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6380/0}
+    command: celery -A app.infrastructure.celery.celery_app:celery_app beat -l INFO
+    volumes: [./backend:/app]
+    depends_on:
+      backend: {condition: service_healthy}
+  frontend:
+    build: ./frontend
+    environment:
+      VITE_API_URL: /api/v1
+      VITE_PROXY_TARGET: http://backend:8001
+    volumes: [./frontend:/app, /app/node_modules]
+    ports: ["5174:5173"]
+    depends_on:
+      backend: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:5173"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+  mailpit:
+    image: axllent/mailpit:v1.20
+    ports: ["1025:1025", "8025:8025"]
+    healthcheck:
+      test: ["CMD", "/mailpit", "readyz"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+volumes:
+  postgres_data:

@@ -1,0 +1,7 @@
+import logging
+import structlog
+
+def configure_logging():
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
+    structlog.configure(processors=[structlog.contextvars.merge_contextvars, structlog.processors.TimeStamper(fmt="iso"), structlog.processors.JSONRenderer()])
+

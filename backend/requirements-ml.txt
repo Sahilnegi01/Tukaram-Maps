@@ -1,0 +1,4 @@
+# Optional production ML worker image. Large model runtimes are deliberately
+# kept out of the API/Beat images; install this file in a dedicated worker.
+transformers==4.45.2
+sentence-transformers==3.2.0

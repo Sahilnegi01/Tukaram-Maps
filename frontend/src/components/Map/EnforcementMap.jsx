@@ -1,0 +1,16 @@
+import {useEffect} from 'react';
+import {MapContainer,Marker,TileLayer,useMap,useMapEvents} from 'react-leaflet';
+import MarkerClusterGroup from 'react-leaflet-cluster';
+import L from 'leaflet';
+import {validCoordinates} from '../../utils/format';
+
+const MAHARASHTRA_CENTER=[19.3,75.5];
+const MAHARASHTRA_BOUNDS=[[15.5,72.3],[22.2,80.9]];
+const cities=[['Mumbai',19.08,72.88],['Pune',18.52,73.86],['Nashik',19.99,73.79],['Chhatrapati Sambhajinagar',19.88,75.34],['Kolhapur',16.70,74.24],['Nagpur',21.15,79.09]];
+const actionClass=t=>t==='NOTICE_ISSUED'?'warning':t==='LICENSE_CANCELLED'||t==='SHUT_DOWN'?'danger':t==='REOPENED'?'success':'action';
+const pinIcon=x=>L.divIcon({className:'pinHost',html:`<span class="mapPin ${actionClass(x.latest_action?.type)}"><b>✓</b></span>`,iconSize:[34,44],iconAnchor:[17,43]});
+const clusterIcon=cluster=>L.divIcon({className:'clusterHost',html:`<span class="clusterBadge">${cluster.getChildCount()}</span>`,iconSize:[42,42]});
+function Watch({onViewport,focus,onMapClick}){const map=useMapEvents({click(){onMapClick()},dragstart(){onMapClick()},moveend(){const b=map.getBounds();onViewport({north:b.getNorth(),south:b.getSouth(),east:b.getEast(),west:b.getWest(),zoom:map.getZoom()})}});useEffect(()=>{const b=map.getBounds();onViewport({north:b.getNorth(),south:b.getSouth(),east:b.getEast(),west:b.getWest(),zoom:map.getZoom()})},[]);useEffect(()=>{if(focus?.latitude)map.flyTo([focus.latitude,focus.longitude],12)},[focus]);return null}
+function MapControls(){const map=useMap();const locate=()=>{if(!navigator.geolocation){window.alert('Location is not supported by this browser.');return}navigator.geolocation.getCurrentPosition(({coords})=>map.setView([coords.latitude,coords.longitude],14,{animate:false}),()=>window.alert('Unable to access your location. Please allow location permission in the browser.'),{enableHighAccuracy:true,timeout:10000})};return <div className="zoomControls"><button type="button" onClick={locate} title="Use current location" aria-label="Use current location">⌖</button><span><button type="button" onClick={()=>map.setZoom(map.getZoom()+1,{animate:false})} aria-label="Zoom in">+</button><button type="button" onClick={()=>map.setZoom(map.getZoom()-1,{animate:false})} aria-label="Zoom out">−</button></span></div>}
+function Labels(){return <>{cities.map(([name,lat,lng])=><Marker key={name} position={[lat,lng]} interactive={false} icon={L.divIcon({className:'cityLabel',html:`<i></i>${name}`,iconSize:[90,20],iconAnchor:[45,10]})}/>)}</>}
+export default function EnforcementMap({items,onViewport,focus,onSelect}){return <MapContainer center={MAHARASHTRA_CENTER} zoom={7} minZoom={6} maxBounds={MAHARASHTRA_BOUNDS} maxBoundsViscosity={1} zoomControl={false} className="map"><TileLayer attribution='&copy; OpenStreetMap contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/><Watch onViewport={onViewport} focus={focus} onMapClick={()=>onSelect(null)}/><Labels/><MarkerClusterGroup chunkedLoading iconCreateFunction={clusterIcon}>{items.filter(validCoordinates).map(x=><Marker key={x.id} position={[x.latitude,x.longitude]} icon={x.cluster?L.divIcon({className:'clusterHost',html:`<span class="clusterBadge">${x.count||0}</span>`,iconSize:[42,42]}):pinIcon(x)} eventHandlers={x.cluster?{}:{click:()=>onSelect(x)}}/>)}</MarkerClusterGroup><MapControls/></MapContainer>}

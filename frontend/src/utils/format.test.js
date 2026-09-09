@@ -1,0 +1,2 @@
+import {describe,expect,it} from 'vitest';import {humanizeAction,validCoordinates} from './format';
+describe('map presentation helpers',()=>{it('formats action names',()=>expect(humanizeAction('LICENSE_CANCELLED')).toBe('LICENSE CANCELLED'));it('rejects missing coordinates',()=>{expect(validCoordinates({latitude:18.5,longitude:73.8})).toBe(true);expect(validCoordinates({latitude:null,longitude:73.8})).toBe(false)})});
