@@ -1,3 +1,2 @@
-import React from 'react'; import ReactDOM from 'react-dom/client'; import {RouterProvider} from 'react-router-dom'; import 'leaflet/dist/leaflet.css'; import './styles/global.css'; import Providers from './app/providers'; import router from './app/router';
+import React from 'react'; import ReactDOM from 'react-dom/client'; import {RouterProvider} from 'react-router-dom'; import 'leaflet/dist/leaflet.css'; import './styles/global.css'; import './styles/mobile.css'; import Providers from './app/providers'; import router from './app/router';
 ReactDOM.createRoot(document.getElementById('root')).render(<React.StrictMode><Providers><RouterProvider router={router}/></Providers></React.StrictMode>);
-

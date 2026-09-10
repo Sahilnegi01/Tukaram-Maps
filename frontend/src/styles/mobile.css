@@ -1,0 +1,51 @@
+@media (max-width: 760px) {
+  html, body, #root { width: 100%; height: 100%; overflow: hidden; }
+  .mapPage { height: 100dvh; min-height: 0; }
+  .brand { max-width: calc(100% - 170px); padding: 5px 9px 5px 5px; }
+  .brandMark { width: 38px; height: 38px; }
+  .brand b { font-size: .78rem; }
+  .mapPage > .themeToggle { top: 10px; right: max(12px, env(safe-area-inset-right)); min-width: 132px; height: 40px; }
+  .topSearch { top: 64px; left: 12px; width: calc(100% - 24px); }
+  .search input { height: 46px; }
+  .results { max-height: calc(100dvh - 130px); }
+  .notice { top: 120px; width: calc(100% - 32px); text-align: center; }
+  .detailsPanel { max-height: calc(100dvh - 118px); padding: 17px; padding-bottom: max(18px, env(safe-area-inset-bottom)); overscroll-behavior: contain; }
+  .detailsPanel h2 { font-size: 1.15rem; }
+  .infoGrid, .statusCards { gap: 7px; }
+  .primaryAction, .secondaryAction { padding: 12px; }
+  .zoomControls { right: 12px !important; bottom: max(14px, env(safe-area-inset-bottom)) !important; }
+  .leaflet-control-attribution { max-width: 75vw; overflow: hidden; font-size: 8px; white-space: nowrap; }
+  .page { width: 100%; min-height: 100dvh; padding: 24px 16px; overflow: auto; }
+}
+
+@media (max-width: 520px) {
+  .brand > span:last-child { display: none; }
+  .brand { max-width: none; padding-right: 5px; }
+  .recordPage { min-height: 100dvh; overflow-x: hidden; }
+  .recordTopbar { gap: 12px; padding: 12px; }
+  .recordTopbar > div { width: 100%; justify-content: space-between; }
+  .recordTopbar nav { display: grid; width: 100%; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .recordTopbar nav .themeToggle { grid-column: 1 / -1; width: 100%; }
+  .recordTopbar nav > button { width: 100%; min-height: 40px; }
+  .recordTopbar .disputeButton { grid-column: 1 / -1; }
+  .recordContent { width: calc(100% - 24px); padding: 16px 0 28px; }
+  .recordHero { gap: 18px; padding: 18px; }
+  .recordIdentity h1 { overflow-wrap: anywhere; font-size: 1.75rem; }
+  .recordIdentity p { line-height: 1.55; }
+  .recordIdentity p button { display: block; margin: 8px 0 0; }
+  .recordBadges { margin-bottom: 13px; }
+  .currentStatus { padding: 16px; }
+  .recordInfo > div { min-height: 82px; padding: 15px 18px; }
+  .historySection { padding-top: 28px; }
+  .sectionHeading { gap: 12px; margin-bottom: 18px; }
+  .auditEntry summary { gap: 8px; padding: 15px 13px; }
+  .auditEntry summary > span:nth-child(2) { min-width: 0; grid-template-columns: 1fr; }
+  .auditEntry summary b { grid-column: 1; overflow-wrap: anywhere; font-size: .9rem; }
+  .auditEntry summary time { grid-row: 2; }
+  .auditBody { padding: 0 14px 18px; }
+  .evidenceCard { padding: 10px; }
+  .evidenceCard b, .evidenceCard em { white-space: normal; overflow-wrap: anywhere; }
+  .publicNotice { padding: 16px; }
+  .recordFooter { padding: 18px 14px; }
+  .recordFooter nav { flex-wrap: wrap; gap: 14px; }
+}
