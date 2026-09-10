@@ -26,6 +26,6 @@ export default function EstablishmentDetails(){
       <section className="historySection"><div className="sectionHeading"><div><h2>Historical Actions &amp; Audit Log</h2><p>Verified actions shown from most recent to oldest.</p></div><span>{actions.length} Enforced {actions.length===1?'Event':'Events'}</span></div>{actions.length?<ActionHistory actions={actions}/>:<p className="emptyHistory">No verified historical actions are available.</p>}</section>
       <aside className="publicNotice"><b>Public Record Notice</b><p>This page summarizes public regulatory notices and press reporting. Current operating status is shown separately from historical actions. Businesses may report inaccurate information for review.</p></aside>
     </div>
-    <footer className="recordFooter"><span>© {new Date().getFullYear()} Tukaram Maps</span><nav><a href="mailto:negisahil642@gmail.com">Contact: negisahil642@gmail.com</a></nav></footer>
+    <footer className="recordFooter"><span>© {new Date().getFullYear()} Tukaram Maps</span><nav><a href="mailto:negisahil642@gmail.com">Contact</a></nav></footer>
   </main>;
 }
